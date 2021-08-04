@@ -1,0 +1,22 @@
+{
+  "name": "bike-computer",
+  "version": "1.0.0",
+  "description": "Attempt to create a bike computer with an old android phone and an old kindle device.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iosonosempreio/bike-computer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iosonosempreio/bike-computer/issues"
+  },
+  "homepage": "https://github.com/iosonosempreio/bike-computer#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
