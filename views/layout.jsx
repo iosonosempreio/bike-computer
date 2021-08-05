@@ -7,7 +7,7 @@ function Layout(props) {
       <head>
         <title>{props.title}</title>
         <link rel="stylesheet" href="/stylesheets/style.css" />
-        <meta http-equiv="refresh" content="5"></meta>
+        <meta httpEquiv="refresh" content="5"></meta>
         <script
           dangerouslySetInnerHTML={{
             __html: `
