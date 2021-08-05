@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "bike-computer-updated": "git pull && npm install && npm start"
+    "bike-computer": "git pull && npm install && npm start"
   },
   "dependencies": {
     "errorhandler": "^1.5.0",
