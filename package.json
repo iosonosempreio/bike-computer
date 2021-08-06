@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "bike-computer": "git fetch --all && npm install && npm start"
+    "update": "git pull && npm install",
+    "bike-computer": "termux-wake-clock &&  && npm start"
   },
   "dependencies": {
     "bootstrap": "^5.1.0",
