@@ -2,14 +2,6 @@
 const express = require("express");
 const termuxAPI = require("termux-api").default;
 
-let geoLocation = termuxAPI
-  .createCommand()
-  .location()
-  .fromGPSProvider()
-  .requestOnce()
-  .build()
-  .run();
-
 console.log("the script must run on termux on android")
 
 const app = express();
@@ -31,25 +23,35 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 app.get("/", (req, res) => res.send("index.html"));
 
+const geoLocation = termuxAPI
+	  .createCommand()
+	  .location()
+	  .fromGPSProvider()
+	  .requestUpdates()
+	  .build()
+	  .run();
+
 app.get("/getGPSLocation", (req, res) => {
   const d = new Date();
   // const response = `Geolocation! But now the time is ${d.toLocaleString()}`;
 
   const response = {date: d.toLocaleString()}
 
+  try {
+		  console.log("Location requested")
   
-
-  if (geoLocation) {
-    // const thisLocation = geoLocation
-    //   .getOutputObject()
-    //   .then(function (location) {
-    //     console.log("Last known location: ", location);
-    //     const response = { location, date: d.toLocaleString() };
-    //     res.send(response);
-    //   });
-    res.send({ location: "CAN geolocate", date: d.toLocaleString() });
-  } else {
-    res.send({ location: "cant geolocate", date: d.toLocaleString() });
+	  const thisLocation = geoLocation
+	      .getOutputObject()
+	      .then(function (location) {
+		    const {latitude, longitude, speed, accuracy, elapsedMs} = location;
+	        console.log("Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs);
+	        const response = { location:location , date: d.toLocaleString() };
+	        res.send(response);
+	      });
+      
+  } catch(err) {
+	  console.log(err)
+    res.send({ location: "CANNOT geolocate", date: d.toLocaleString() });
   }
 
   const example_location = {
@@ -63,4 +65,5 @@ app.get("/getGPSLocation", (req, res) => {
     elapsedMs: 15,
     provider: "gps",
   };
+  
 });

@@ -8,14 +8,15 @@
     <!-- Bootstrap CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-    <title>Hello, world!</title>
+    <title>Kindle Bike Computer</title>
   </head>
   <body>
     <div class="container">
-        <h1>Hello, world!</h1>
+        <h1>Hello Rider!</h1>
         <h2 id="date"></h2>
         <div id="test">
             <!-- place here data -->
+            Waiting for GPS location
         </div>
     </div>
 
@@ -24,18 +25,30 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-      window.setInterval(function(){
-        const xhttp = new XMLHttpRequest();
-        xhttp.onload = function() {
-            var response = JSON.parse(this.responseText)
-            console.log(JSON.stringify(response, null, 4))
-            document.getElementById("date").innerHTML = response.date
-        }
-        xhttp.open("GET", "/getGPSLocation");
-        xhttp.send();
-
-
-      }, 1000);
+	    function requestLocation(persistent=false) {
+// 		    console.log("getting location...")
+		    const xhttp = new XMLHttpRequest();
+	        xhttp.onload = function() {
+	            var response = JSON.parse(this.responseText)
+// 	            console.log(JSON.stringify(response, null, 4))
+	            document.getElementById("date").innerHTML = response.date
+	            
+	            document.getElementById("test").innerHTML = JSON.stringify(response.location, null, 4)
+	            
+	            // continue to request persistently
+	            if (persistent) {
+		            requestLocation()
+	            }
+	            
+	        }
+	        xhttp.open("GET", "/getGPSLocation", true);
+	        xhttp.send();
+	    }
+		requestLocation()
+		
+		setInterval(function(){
+			requestLocation()
+		}, 1000)
     </script>
   </body>
 </html>
