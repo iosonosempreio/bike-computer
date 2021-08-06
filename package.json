@@ -3,16 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app.js",
+    "start": "node server.js",
     "bike-computer": "git pull && npm install && npm start"
   },
   "dependencies": {
-    "errorhandler": "^1.5.0",
-    "express": "^4.16.1",
-    "express-react-views": "^0.11.0",
-    "morgan": "^1.9.0",
-    "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "bootstrap": "^5.1.0",
+    "express": "^4.17.1"
   }
 }
