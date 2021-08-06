@@ -94,6 +94,7 @@ app.get("/getGPSLocationOLD", (req, res) => {
     const thisLocation = geoLocation
       .getOutputObject()
       .then(function (location) {
+        console.log(location)
         const { latitude, longitude, speed, accuracy, elapsedMs } = location;
         console.log(
           "Last known location: ",
