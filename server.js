@@ -1,14 +1,18 @@
 /* Simple Express.js Server */
 const express = require("express");
+const termuxAPI = require("termux-api").default;
+
+let geoLocation = termuxAPI
+  .createCommand()
+  .location()
+  .fromGPSProvider()
+  .requestOnce()
+  .build()
+  .run();
+
+console.log("the script must run on termux on android")
+
 const app = express();
-let termuxAPIsAvailable = false;
-try {
-  const termuxAPI = require("termux-api").default;
-  termuxAPIsAvailable = true;
-  console.log("termux api are available")
-} catch (err) {
-  console.log(err);
-}
 
 // define the port where client files will be provided
 let port = process.env.PORT || 3000;
@@ -27,23 +31,15 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 app.get("/", (req, res) => res.send("index.html"));
 
-let geoLocation;
-
-if (termuxAPIsAvailable) {
-  geoLocation = termuxAPI
-    .createCommand()
-    .location()
-    .fromGPSProvider()
-    .requestOnce()
-    .build()
-    .run();
-}
-
 app.get("/getGPSLocation", (req, res) => {
   const d = new Date();
   // const response = `Geolocation! But now the time is ${d.toLocaleString()}`;
 
-  if (canGeolocate) {
+  const response = {date: d.toLocaleString()}
+
+  
+
+  if (geoLocation) {
     // const thisLocation = geoLocation
     //   .getOutputObject()
     //   .then(function (location) {
@@ -51,9 +47,9 @@ app.get("/getGPSLocation", (req, res) => {
     //     const response = { location, date: d.toLocaleString() };
     //     res.send(response);
     //   });
-      res.send({location: "CAN geolocate", date: d.toLocaleString()});
+    res.send({ location: "CAN geolocate", date: d.toLocaleString() });
   } else {
-    res.send({location: "cant geolocate", date: d.toLocaleString()});
+    res.send({ location: "cant geolocate", date: d.toLocaleString() });
   }
 
   const example_location = {
