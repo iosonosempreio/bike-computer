@@ -1,3 +1,5 @@
+const { exec } = require("child_process");
+
 /* Simple Express.js Server */
 const express = require("express");
 const termuxAPI = require("termux-api").default;
@@ -22,6 +24,61 @@ app.use(
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 app.get("/", (req, res) => res.send("index.html"));
+	  
+app.get("/getGPSLocation", (req, res) => {
+	
+	console.log("Location requested CLI")
+	
+	exec("termux-location -r once", (error, stdout, stderr) => {
+	    if (error) {
+	        console.log(`error: ${error.message}`);
+	        return;
+	    }
+	    if (stderr) {
+	        console.log(`stderr: ${stderr}`);
+	        return;
+	    }
+	    const d = new Date();
+	    const location = JSON.parse(stdout)
+	    const {latitude, longitude, speed, accuracy, elapsedMs} = location;
+		console.log("Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs);
+	    
+	    res.send({ location:location , date: d.toLocaleString() });
+	});
+	
+})
+
+
+app.get("/getBatteryStatus", (req, res) => {
+	
+	console.log("Battery requested CLI")
+	
+	exec("termux-battery-status", (error, stdout, stderr) => {
+	    if (error) {
+	        console.log(`error: ${error.message}`);
+	        return;
+	    }
+	    if (stderr) {
+	        console.log(`stderr: ${stderr}`);
+	        return;
+	    }
+	    const d = new Date();
+	    const battery = JSON.parse(stdout)
+	    const {percentage} = battery;
+		console.log("battery: ", percentage);
+	    
+	    res.send({ battery:battery , date: d.toLocaleString() });
+	});
+	
+})
+
+
+
+
+
+
+
+
 
 const geoLocation = termuxAPI
 	  .createCommand()
@@ -31,7 +88,7 @@ const geoLocation = termuxAPI
 	  .build()
 	  .run();
 
-app.get("/getGPSLocation", (req, res) => {
+app.get("/getGPSLocationOLD", (req, res) => {
   const d = new Date();
   // const response = `Geolocation! But now the time is ${d.toLocaleString()}`;
 
@@ -45,7 +102,7 @@ app.get("/getGPSLocation", (req, res) => {
 	      .then(function (location) {
 		    const {latitude, longitude, speed, accuracy, elapsedMs} = location;
 	        console.log("Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs);
-	        const response = { location:location , date: d.toLocaleString() };
+	        const response = { location:location , date: d };
 	        res.send(response);
 	      });
       

@@ -14,10 +14,15 @@
     <div class="container">
         <h1>Hello Rider!</h1>
         <h2 id="date"></h2>
-        <div id="test">
-            <!-- place here data -->
-            Waiting for GPS location
-        </div>
+        <p id="test">
+            <!-- place here data --> 
+            Waiting for GPS position...
+        </p>
+        
+        <p>
+            <!-- place here data --> 
+            Battery level <span id="battery">...</span>%
+        </p>
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -25,25 +30,77 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-	    
-	    function update(data) {
-		    document.getElementById("date").innerHTML = data.date
-	        document.getElementById("test").innerHTML = JSON.stringify(data.location, null, 4)
-	    }
-	    
+	    var waitingLocation = false;
 	    function requestLocation() {
-// 		    console.log("getting location...")
+		    
+		    
 		    const xhttp = new XMLHttpRequest();
-	        xhttp.onload = function() {
-	            update(JSON.parse(this.responseText))
+		    
+	        
+	        xhttp.open("GET", "/getGPSLocation");
+	        
+	        if (waitingLocation) {
+		        return;
 	        }
-	        xhttp.open("GET", "/getGPSLocation", true);
+// 	        console.log("getting location...")
+	        
 	        xhttp.send();
+
+	        waitingLocation = true;
+	        
+	        xhttp.onload = function() {
+// 		        console.log(this.responseText)
+	            var data = JSON.parse(this.responseText)
+	            
+	            document.getElementById("date").innerHTML = data.date
+				document.getElementById("test").innerHTML = JSON.stringify(data.location, null, 4)
+								
+				waitingLocation = false
+				
+	        }
 	    }
 	    
 		setInterval(function(){
 			requestLocation()
 		}, 2000)
+		
+		
+		
+		var waitingBattery = false;
+		
+		function requestBattery() {
+		    
+		    
+		    const xhttp = new XMLHttpRequest();
+		    
+	        
+	        xhttp.open("GET", "/getBatteryStatus");
+	        
+	        if (waitingBattery) {
+		        return;
+	        }
+	        console.log("getting battery...")
+	        
+	        xhttp.send();
+
+	        waitingBattery = true;
+	        
+	        xhttp.onload = function() {
+		        console.log(this.responseText)
+	            var data = JSON.parse(this.responseText)
+	            
+	            document.getElementById("battery").innerHTML = data.battery.percentage
+								
+				waitingBattery = false;
+				
+	        }
+	    }
+		requestBattery()
+		setInterval(function(){
+			requestBattery()
+		}, 60000)
+		
+// 		requestLocation()
 		
     </script>
   </body>
