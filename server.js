@@ -19,11 +19,89 @@ app.use(
   "/bootstrap",
   express.static(__dirname + "/node_modules/bootstrap/dist/")
 );
+app.use(
+  "/jquery",
+  express.static(__dirname + "/node_modules/jquery/dist/")
+);
+app.use(
+  "/bootstrap-icons",
+  express.static(__dirname + "/node_modules/bootstrap-icons/")
+);
+
 
 // start to listen to that port
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Backend is listening on port ${port}!`));
 
-app.get("/", (req, res) => res.send("index.html"));
+// app.get("/", (req, res) => res.send("index.html"));
+let locations = [];
+let batteryStates = [];
+
+function getPositionPersistently() {
+	exec("termux-location", (error, stdout, stderr) => {
+	  if (error) {
+	    console.log(`error: ${error.message}`);
+	    return;
+	  }
+	  if (stderr) {
+	    console.log(`stderr: ${stderr}`);
+	    return;
+	  }
+	  try {
+		  const d = new Date();
+      let location = JSON.parse(stdout);
+      location.date = new Date();
+      locations.push(location);
+      console.log("Position received at", d.toLocaleString());
+	  } catch(err) {
+		  console.log(err);
+	  }
+	  getPositionPersistently();
+ });
+}
+console.log("Start position requests");
+getPositionPersistently();
+
+function getBatteryStatus() {
+	exec("termux-battery-status", (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    
+    try {
+	    const d = new Date();
+	    const battery = JSON.parse(stdout);
+	    const { percentage } = battery;
+	    console.log("Battery is", percentage, "% at", d.toLocaleString());
+	    batteryStates.push(battery)
+    } catch(err) {
+	    console.log(err);
+    }
+  });
+}
+getBatteryStatus();
+setInterval(()=>getBatteryStatus(), 60000);
+
+
+
+app.get("/getData", (req,res) => {
+	const response = {}
+	if (locations.length>0 && batteryStates.length>0) {
+		response.location = locations[locations.length-1]
+		response.battery = batteryStates[batteryStates.length-1]
+	}
+	res.send(response)
+});
+
+
+
+
+
+
 
 app.get("/getGPSLocation", (req, res) => {
   console.log("Location requested CLI");
@@ -50,27 +128,6 @@ app.get("/getGPSLocation", (req, res) => {
         console.log(err);
         return;
 	  }
-  });
-});
-
-app.get("/getBatteryStatus", (req, res) => {
-  console.log("Battery requested CLI");
-
-  exec("termux-battery-status", (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    const d = new Date();
-    const battery = JSON.parse(stdout);
-    const { percentage } = battery;
-    console.log("battery: ", percentage);
-
-    res.send({ battery: battery, date: d.toLocaleString() });
   });
 });
 

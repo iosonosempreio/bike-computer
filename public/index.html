@@ -4,103 +4,121 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link rel="icon" href="/bootstrap-icons/icons/bicycle.svg" type="image/svg">
 
     <!-- Bootstrap CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-    <title>Kindle Bike Computer</title>
+    <title>Hello Riders</title>
   </head>
   <body>
     <div class="container">
-        <h1>Hello Rider!</h1>
-        <h2 id="date"></h2>
-        <p id="test">
-            <!-- place here data --> 
-            Waiting for GPS position...
-        </p>
-        
-        <p>
-            <!-- place here data --> 
-            Battery level <span id="battery">...</span>%
-        </p>
+	    <div class="row">
+		    <div class="col-xs-12 text-center">
+			    <h1>
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    Hello Riders! 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32"> 
+				    <img src="/bootstrap-icons/icons/bicycle.svg" alt="Bicycle" width="32" height="32">
+				  </h1>
+				  <hr style="border-color: grey; margin-bottom: 30px;"/>
+		    </div>
+		  </div>
+	    <div class="row">
+		    <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/pin-map.svg" alt="pin-map" width="32" height="32">
+		    </div>
+		    <div class="col-xs-5">
+				    <h4 id="coordinates">0, 0</h4>
+				    <h6>Coordinates</h6>
+		    </div>
+		    <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/graph-up.svg" alt="graph-up" width="32" height="32">
+		    </div>
+			  <div class="col-xs-5">
+			    <h4 id="altitude">0, 0</h4>
+			    <h6>Altitude</h6>
+			  </div>
+	    </div>
+	    <div class="row">
+		    <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/speedometer.svg" alt="speedometer" width="32" height="32">
+		    </div>
+			  <div class="col-xs-5">
+				    <h4 id="speed">0, 0</h4>
+				    <h6>Speed</h6>
+		    </div>
+		    <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/compass.svg" alt="compass" width="32" height="32">
+		    </div>
+			  <div class="col-xs-5">
+			    <h4 id="bearing">0, 0</h4>
+			    <h6>Bearing</h6>
+			  </div>
+	    </div>
+	    <div class="row">
+			  <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/battery-half.svg" alt="battery-half" width="32" height="32">
+		    </div>
+			  <div class="col-xs-5">
+				    <h4 id="battery">0, 0</h4>
+				    <h6>Battery</h6>
+		    </div>
+		    <div class="col-xs-1">
+				    <img src="/bootstrap-icons/icons/clock-history.svg" alt="clock-history" width="32" height="32">
+		    </div>
+			  <div class="col-xs-5">
+				    <h4 id="date">0, 0</h4>
+				    <h6>Latest update</h6>
+		    </div>
+	    </div>
     </div>
-
-    <!-- Optional JavaScript; choose one of the two! -->
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+		
+		<script src="jquery/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    
     <script>
 	    var waitingLocation = false;
-	    function requestLocation() {
-		    
-		    
+	    function requestData() {
 		    const xhttp = new XMLHttpRequest();
 		    
-	        
-	        xhttp.open("GET", "/getGPSLocation");
-	        
-	        if (waitingLocation) {
-		        return;
-	        }
-// 	        console.log("getting location...")
+	        xhttp.open("GET", "/getData");
 	        
 	        xhttp.send();
 
 	        waitingLocation = true;
 	        
 	        xhttp.onload = function() {
-// 		        console.log(this.responseText)
-	            var data = JSON.parse(this.responseText)
-	            
-	            document.getElementById("date").innerHTML = data.date
-				document.getElementById("test").innerHTML = JSON.stringify(data.location, null, 4)
-								
-				waitingLocation = false
-				
+            var data = JSON.parse(this.responseText)
+            
+            console.log(data)
+            
+            if (data === {}) {
+	            console.log("still no data")
+	            return;
+            }
+            
+            var date = new Date(data.location.date)            
+            document.getElementById("date").innerHTML = date.toLocaleString()
+            
+						document.getElementById("coordinates").innerHTML = data.location.latitude + ", " + data.location.longitude + "<br/>(accuracy: " + data.location.accuracy + ")"
+						document.getElementById("altitude").innerHTML = data.location.altitude + "<br/>(accuracy: " + data.location.vertical_accuracy + ")"
+						document.getElementById("speed").innerHTML = data.location.speed
+						
+						document.getElementById("battery").innerHTML = data.battery.percentage
+												
 	        }
 	    }
 	    
 		setInterval(function(){
-			requestLocation()
-		}, 2000)
-		
-		
-		
-		var waitingBattery = false;
-		
-		function requestBattery() {
-		    
-		    
-		    const xhttp = new XMLHttpRequest();
-		    
-	        
-	        xhttp.open("GET", "/getBatteryStatus");
-	        
-	        if (waitingBattery) {
-		        return;
-	        }
-	        console.log("getting battery...")
-	        
-	        xhttp.send();
-
-	        waitingBattery = true;
-	        
-	        xhttp.onload = function() {
-		        console.log(this.responseText)
-	            var data = JSON.parse(this.responseText)
-	            
-	            document.getElementById("battery").innerHTML = data.battery.percentage
-								
-				waitingBattery = false;
-				
-	        }
-	    }
-		requestBattery()
-		setInterval(function(){
-			requestBattery()
-		}, 60000)
-		
-// 		requestLocation()
+			requestData()
+		}, 1000)
 		
     </script>
   </body>
