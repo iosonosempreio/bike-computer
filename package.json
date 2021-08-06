@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "update": "git pull && npm install",
-    "bike-computer": "termux-wake-clock && npm start"
+    "bike-computer": "termux-wake-lock && npm start"
   },
   "dependencies": {
     "bootstrap": "^5.1.0",
