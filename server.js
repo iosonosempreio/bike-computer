@@ -1,10 +1,11 @@
 /* Simple Express.js Server */
 const express = require("express");
 const app = express();
-let canGeolocate = false;
+let termuxAPIsAvailable = false;
 try {
   const termuxAPI = require("termux-api").default;
-  canGeolocate = true;
+  termuxAPIsAvailable = true;
+  console.log("termux api are available")
 } catch (err) {
   console.log(err);
 }
@@ -28,7 +29,7 @@ app.get("/", (req, res) => res.send("index.html"));
 
 let geoLocation;
 
-if (canGeolocate) {
+if (termuxAPIsAvailable) {
   geoLocation = termuxAPI
     .createCommand()
     .location()

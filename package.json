@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "bike-computer": "git pull && npm install && npm start"
+    "bike-computer": "git fetch --all && npm install && npm start"
   },
   "dependencies": {
     "bootstrap": "^5.1.0",
