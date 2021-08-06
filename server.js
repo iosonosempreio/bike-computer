@@ -4,7 +4,7 @@ const { exec } = require("child_process");
 const express = require("express");
 const termuxAPI = require("termux-api").default;
 
-console.log("the script must run on termux on android")
+console.log("the script must run on termux on android");
 
 const app = express();
 
@@ -24,90 +24,95 @@ app.use(
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 app.get("/", (req, res) => res.send("index.html"));
-	  
-app.get("/getGPSLocation", (req, res) => {
-	
-	console.log("Location requested CLI")
-	
-	exec("termux-location -r once", (error, stdout, stderr) => {
-	    if (error) {
-	        console.log(`error: ${error.message}`);
-	        return;
-	    }
-	    if (stderr) {
-	        console.log(`stderr: ${stderr}`);
-	        return;
-	    }
-	    const d = new Date();
-	    const location = JSON.parse(stdout)
-	    const {latitude, longitude, speed, accuracy, elapsedMs} = location;
-		console.log("Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs);
-	    
-	    res.send({ location:location , date: d.toLocaleString() });
-	});
-	
-})
 
+app.get("/getGPSLocation", (req, res) => {
+  console.log("Location requested CLI");
+
+  exec("termux-location -r once", (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    
+    try {
+		  const d = new Date();
+      const location = JSON.parse(stdout);
+      const { latitude, longitude, speed, accuracy, elapsedMs } = location;
+      console.log(
+        "Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs
+      );
+      res.send({ location: location, date: d.toLocaleString() });
+    } catch (err) {
+        console.log(err);
+        return;
+	  }
+  });
+});
 
 app.get("/getBatteryStatus", (req, res) => {
-	
-	console.log("Battery requested CLI")
-	
-	exec("termux-battery-status", (error, stdout, stderr) => {
-	    if (error) {
-	        console.log(`error: ${error.message}`);
-	        return;
-	    }
-	    if (stderr) {
-	        console.log(`stderr: ${stderr}`);
-	        return;
-	    }
-	    const d = new Date();
-	    const battery = JSON.parse(stdout)
-	    const {percentage} = battery;
-		console.log("battery: ", percentage);
-	    
-	    res.send({ battery:battery , date: d.toLocaleString() });
-	});
-	
-})
+  console.log("Battery requested CLI");
 
+  exec("termux-battery-status", (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    const d = new Date();
+    const battery = JSON.parse(stdout);
+    const { percentage } = battery;
+    console.log("battery: ", percentage);
 
-
-
-
-
-
-
+    res.send({ battery: battery, date: d.toLocaleString() });
+  });
+});
 
 const geoLocation = termuxAPI
-	  .createCommand()
-	  .location()
-	  .fromGPSProvider()
-	  .requestUpdates()
-	  .build()
-	  .run();
+  .createCommand()
+  .location()
+  .fromGPSProvider()
+  .requestUpdates()
+  .build()
+  .run();
 
 app.get("/getGPSLocationOLD", (req, res) => {
   const d = new Date();
   // const response = `Geolocation! But now the time is ${d.toLocaleString()}`;
 
-  const response = {date: d.toLocaleString()}
+  const response = { date: d.toLocaleString() };
 
   try {
-		  console.log("Location requested")
-  
-	  const thisLocation = geoLocation
-	      .getOutputObject()
-	      .then(function (location) {
-		    const {latitude, longitude, speed, accuracy, elapsedMs} = location;
-	        console.log("Last known location: ", "lat", latitude, "lon", longitude, "speed", speed, "acc", accuracy, "ms", elapsedMs);
-	        const response = { location:location , date: d };
-	        res.send(response);
-	      });
-      
-  } catch(err) {
-	  console.log(err)
+    console.log("Location requested");
+
+    const thisLocation = geoLocation
+      .getOutputObject()
+      .then(function (location) {
+        const { latitude, longitude, speed, accuracy, elapsedMs } = location;
+        console.log(
+          "Last known location: ",
+          "lat",
+          latitude,
+          "lon",
+          longitude,
+          "speed",
+          speed,
+          "acc",
+          accuracy,
+          "ms",
+          elapsedMs
+        );
+        const response = { location: location, date: d };
+        res.send(response);
+      });
+  } catch (err) {
+    console.log(err);
     res.send({ location: "CANNOT geolocate", date: d.toLocaleString() });
   }
 
@@ -122,5 +127,4 @@ app.get("/getGPSLocationOLD", (req, res) => {
     elapsedMs: 15,
     provider: "gps",
   };
-  
 });
