@@ -25,30 +25,26 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-	    function requestLocation(persistent=false) {
+	    
+	    function update(data) {
+		    document.getElementById("date").innerHTML = data.date
+	        document.getElementById("test").innerHTML = JSON.stringify(data.location, null, 4)
+	    }
+	    
+	    function requestLocation() {
 // 		    console.log("getting location...")
 		    const xhttp = new XMLHttpRequest();
 	        xhttp.onload = function() {
-	            var response = JSON.parse(this.responseText)
-// 	            console.log(JSON.stringify(response, null, 4))
-	            document.getElementById("date").innerHTML = response.date
-	            
-	            document.getElementById("test").innerHTML = JSON.stringify(response.location, null, 4)
-	            
-	            // continue to request persistently
-	            if (persistent) {
-		            requestLocation()
-	            }
-	            
+	            update(JSON.parse(this.responseText))
 	        }
 	        xhttp.open("GET", "/getGPSLocation", true);
 	        xhttp.send();
 	    }
-		requestLocation()
-		
+	    
 		setInterval(function(){
 			requestLocation()
-		}, 1000)
+		}, 2000)
+		
     </script>
   </body>
 </html>
