@@ -44,13 +44,14 @@ app.get("/getGPSLocation", (req, res) => {
   // const response = `Geolocation! But now the time is ${d.toLocaleString()}`;
 
   if (canGeolocate) {
-    const thisLocation = geoLocation
-      .getOutputObject()
-      .then(function (location) {
-        console.log("Last known location: ", location);
-        const response = { location, date: d.toLocaleString() };
-        res.send(response);
-      });
+    // const thisLocation = geoLocation
+    //   .getOutputObject()
+    //   .then(function (location) {
+    //     console.log("Last known location: ", location);
+    //     const response = { location, date: d.toLocaleString() };
+    //     res.send(response);
+    //   });
+      res.send({location: "CAN geolocate", date: d.toLocaleString()});
   } else {
     res.send({location: "cant geolocate", date: d.toLocaleString()});
   }
